@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package puppet_grpc;
+
+message DingRequest {
+  string data = 1;
+}
+message DingResponse {}
+
+service Puppet {
+  rpc Ding (DingRequest) returns (DingResponse) {}
+}

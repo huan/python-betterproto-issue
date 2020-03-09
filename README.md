@@ -1,5 +1,72 @@
 # python-betterproto-issue
 
+The same proto defination, if we put the message in another file and imported it, then the betterproto will generate wrong stubs.
+
+## Reproduce
+
+Clone this repo, and run `bash -x run.sh`
+
+## The Proto
+
+```proto
+syntax = "proto3";
+
+package puppet_grpc;
+
+message DingRequest {
+  string data = 1;
+}
+message DingResponse {}
+
+service Puppet {
+  rpc Ding (DingRequest) returns (DingResponse) {}
+}
+```
+
+## Without Import
+
+The proto files are in `proto_without_import/` directory.
+
+It generates right: `ding(self, *, data: str = "")`
+
+```python
+@dataclass
+class DingRequest(betterproto.Message):
+    data: str = betterproto.string_field(1)
+
+
+@dataclass
+class DingResponse(betterproto.Message):
+    pass
+
+
+class PuppetStub(betterproto.ServiceStub):
+    async def ding(self, *, data: str = "") -> DingResponse:
+        request = DingRequest()
+        request.data = data
+
+        return await self._unary_unary(
+            "/puppet_grpc.Puppet/Ding", request, DingResponse,
+        )
+```
+
+## With Import
+
+The proto files are in `proto_with_import/` directory.
+
+It generates WRONG: `ding(self)`
+
+```python
+async def ding(self) -> puppet_message.DingResponse:
+        request = puppet_message.DingRequest()
+
+        return await self._unary_unary(
+            "/puppet_grpc.Puppet/Ding", request, puppet_message.DingResponse,
+        )
+```
+
+
+
 run `./run.sh` will get the following unexpected python result:
 
 ```python
@@ -22,3 +89,15 @@ class PuppetStub(betterproto.ServiceStub):
             "/puppet_grpc.Puppet/Ding", request, puppet_message.DingResponse,
         )
 ```
+
+## Author
+
+[Huan LI](https://github.com/huan) ([李卓桓](http://linkedin.com/in/zixia)) zixia@zixia.net
+
+[![Profile of Huan LI (李卓桓) on StackOverflow](https://stackexchange.com/users/flair/265499.png)](https://stackexchange.com/users/265499)
+
+## Copyright & License
+
+- Code & Docs © 2018-now Huan LI \<zixia@zixia.net\>
+- Code released under the Apache-2.0 License
+- Docs released under Creative Commons
