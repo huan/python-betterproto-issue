@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import 'puppet_message/base.proto';
+
+package puppet_grpc;
+
+service Puppet {
+  rpc Ding (puppet_message.DingRequest) returns (puppet_message.DingResponse) {}
+}

@@ -1,0 +1,7 @@
+syntax = "proto3";
+package puppet_message;
+
+message DingRequest {
+  string data = 1;
+}
+message DingResponse {}
