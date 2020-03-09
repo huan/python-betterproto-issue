@@ -2,6 +2,8 @@
 
 The same proto defination, if we put the message in another file and imported it, then the betterproto will generate wrong stubs.
 
+See: [No arguments are generated for stub methods when using `import` with proto defination #23](https://github.com/danielgtaylor/python-betterproto/issues/23)
+      
 ## Reproduce
 
 Clone this repo, and run `bash -x run.sh`
